@@ -11,7 +11,6 @@
       <router-link to="/" class="menu-link">Home</router-link>
       <router-link to="/register" class="menu-link">Registro</router-link>
       <router-link to="/login" class="menu-link">Login</router-link>
-      <router-link to="/contact" class="menu-link">Contacto</router-link> 
     </nav>
 
     <!-- Botón para cambiar tema -->

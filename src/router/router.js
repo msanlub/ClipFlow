@@ -8,7 +8,6 @@ const routes = [
     {path: "/user", component: () => import ("../pages/User.vue")},
     {path: "/login", component: () => import ("../components/LoginForm.vue")},
     {path: "/register", component: () => import ("../components/RegisterForm.vue")},
-    {path: "/contact", component: () => import ("../components/ContactForm.vue")},
     {path: "/:pathMatch(.*)*", component: () => import ("../pages/NoPageFound.vue")
         //redirect:"/"
     },

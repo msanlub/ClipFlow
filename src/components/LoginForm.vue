@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import api from '@/api/api'; 
+
 export default {
   name: 'LoginForm',
   data() {
@@ -65,15 +67,38 @@ export default {
 
       return isValid;
     },
-    submit() {
+    async submit() {
       if (this.validateForm()) {
         this.isSubmitting = true;
-        // Simulación de login vía API
-        const userData = { email: this.email };
-        this.$emit('authenticated', userData);
-        this.email = '';
-        this.password = '';
-        this.isSubmitting = false;
+
+        try {
+          const response = await api.post('/login', {
+            email: this.email,
+            password: this.password,
+          });
+
+          // Guardar token de acceso y usuario en el almacenamiento local
+          localStorage.setItem('access_token', response.data.access_token);
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+
+          // Emitir evento de autenticación
+          this.$emit('authenticated', response.data.user);
+
+          // Redirigir a la página del usuario
+          this.$router.push('/user');
+
+          // limpia el formulario
+          this.email = '';
+          this.password = '';
+        } catch (error) {
+          
+          if (error.response && error.response.data) {
+            this.errors = error.response.data.error ? { email: error.response.data.error } : {};
+          }
+          console.error('Error al iniciar sesión:', error);
+        } finally {
+          this.isSubmitting = false;
+        }
       }
     },
   },
@@ -81,5 +106,5 @@ export default {
 </script>
 
 <style scoped>
-@import '../scss/main.scss'
+@import '../scss/main.scss';
 </style>

@@ -87,7 +87,7 @@ export default {
     submit() {
       if (this.validateForm()) {
         this.isSubmitting = true;
-        // Simulación de enviar mensaje vía API
+        // TOODO enviar el mensaje a un endpoint de contacto wei
         alert('Mensaje enviado!');
         this.name = '';
         this.email = '';

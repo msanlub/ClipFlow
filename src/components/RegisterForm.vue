@@ -63,6 +63,9 @@
 </template>
 
 <script>
+// Importa la instancia de axios configurada previamente
+import api from '@/api/api';
+
 export default {
   name: 'RegisterForm',
   props: {
@@ -138,7 +141,7 @@ export default {
         this.errors.confirmPassword = '';
       }
     },
-    submit() {
+    async submit() {
       // Se valida todo el formulario antes de enviarlo
       this.validateName();
       this.validateEmail();
@@ -147,11 +150,38 @@ export default {
 
       if (!this.isFormValid) return;
 
-      // Simulación de registro
-      const userData = { name: this.name, email: this.email };
-      this.$emit('registered', userData);
+      // Crear el objeto con los datos del formulario
+      const formData = {
+        name: this.name,
+        email: this.email,
+        password: this.password,
+        password_confirmation: this.confirmPassword,
+      };
 
-      this.close();
+      try {
+        // Enviar el formulario a la API para registrar el usuario
+        const response = await api.post('/register', formData);
+        
+        // Si el registro es exitoso, guardar el token
+        const token = response.data.token;
+        localStorage.setItem('authToken', token);
+
+        // Notificar al padre que el registro fue exitoso
+        this.$emit('registered', response.data.user);
+
+        // Redirigir a la página del usuario
+        this.$router.push('/user');
+
+        // Limpiar el formulario y cerrar el modal
+        this.close();
+
+        console.log('Usuario registrado con éxito', response.data);
+      } catch (error) {
+        if (error.response && error.response.data.errors) {
+          this.errors = error.response.data.errors; // Mostrar los errores en el formulario
+        }
+        console.error('Error registrando al usuario', error);
+      }
     },
   },
   watch: {
