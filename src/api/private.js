@@ -6,7 +6,8 @@ const privateAPI = axios.create({
 
 // Interceptor para agregar el token a las solicitudes
 privateAPI.interceptors.request.use(config => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('access_token');
+
   if (token) {
     config.headers['Authorization'] = `Bearer ${token}`;
   }
