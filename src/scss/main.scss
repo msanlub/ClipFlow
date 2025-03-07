@@ -1,0 +1,18 @@
+// Utilities
+@import './utilities/_mixins'; 
+@import './utilities/_variables'; 
+
+// Base
+@import './base/_reset'; 
+@import './base/_typo';
+
+// Components
+@import './components/_header';
+@import './components/_footer';
+@import './components/_templatesList';
+@import './components/_forms';
+
+// Pages
+@import './pages/_home';
+@import './pages/_noPageFound';
+@import './pages/_user';
