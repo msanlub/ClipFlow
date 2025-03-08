@@ -10,6 +10,8 @@
           v-model="name"
           :class="{'input-error': errors.name}"
           placeholder="Enter your name"
+          @input="validateName"
+          @blur="validateName"
           required
         />
         <span v-if="errors.name" class="error">{{ errors.name }}</span>
@@ -23,6 +25,8 @@
           v-model="email"
           :class="{'input-error': errors.email}"
           placeholder="Enter your email"
+          @input="validateEmail"
+          @blur="validateEmail"
           required
         />
         <span v-if="errors.email" class="error">{{ errors.email }}</span>
@@ -35,12 +39,15 @@
           v-model="message"
           :class="{'input-error': errors.message}"
           placeholder="Write your message"
+          @input="validateMessage"
+          @blur="validateMessage"
           required
         ></textarea>
         <span v-if="errors.message" class="error">{{ errors.message }}</span>
       </div>
 
       <div class="form-actions">
+        <button type="button" @click="cancel">Cancel</button>
         <button type="submit" :disabled="isSubmitting">Send</button>
       </div>
     </form>
@@ -60,40 +67,59 @@ export default {
     };
   },
   methods: {
+    validateName() {
+      if (!this.name) {
+        this.errors.name = 'This field is required';
+      } else {
+        this.errors.name = '';
+      }
+    },
+    validateEmail() {
+      if (!this.email || !/.+@.+\..+/.test(this.email)) {
+        this.errors.email = 'Please enter a valid email';
+      } else {
+        this.errors.email = '';
+      }
+    },
+    validateMessage() {
+      if (!this.message) {
+        this.errors.message = 'This field is required';
+      } else {
+        this.errors.message = '';
+      }
+    },
     validateForm() {
       this.errors = {};
       let isValid = true;
 
-      // Validación del nombre
-      if (!this.name) {
-        this.errors.name = 'This field is required';
-        isValid = false;
-      }
+      this.validateName();
+      if (this.errors.name) isValid = false;
 
-      // Validación del email
-      if (!this.email || !/.+@.+\..+/.test(this.email)) {
-        this.errors.email = 'Please enter a valid email';
-        isValid = false;
-      }
+      this.validateEmail();
+      if (this.errors.email) isValid = false;
 
-      // Validación del mensaje
-      if (!this.message) {
-        this.errors.message = 'This field is required';
-        isValid = false;
-      }
+      this.validateMessage();
+      if (this.errors.message) isValid = false;
 
       return isValid;
     },
     submit() {
       if (this.validateForm()) {
         this.isSubmitting = true;
-        // TOODO enviar el mensaje a un endpoint de contacto wei
+        // TODO: Enviar el mensaje a un endpoint de contacto
         alert('Message sent successfully!');
-        this.name = '';
-        this.email = '';
-        this.message = '';
+        this.resetForm();
         this.isSubmitting = false;
       }
+    },
+    cancel() {
+      this.resetForm();
+    },
+    resetForm() {
+      this.name = '';
+      this.email = '';
+      this.message = '';
+      this.errors = {};
     },
   },
 };

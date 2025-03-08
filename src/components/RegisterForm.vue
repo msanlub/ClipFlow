@@ -1,19 +1,19 @@
 <template>
   <div class="form-container">
     <h2>Register</h2>
-    <form ref="form" @submit.prevent="submit">
+    <form @submit.prevent="submit">
       <div class="form-field">
         <label for="name">Name</label>
         <input 
           type="text" 
           id="name" 
           v-model="name" 
-          @input="validateName" 
-          @blur="touched.name = true" 
-          :class="{'is-invalid': errors.name && touched.name}" 
+          @input="validateName"
+          @blur="touched.name = true"
+          :class="{ 'input-error': errors.name && touched.name }"
           placeholder="Enter your name" 
         />
-        <span v-if="errors.name && touched.name" class="error-message">{{ errors.name }}</span> 
+        <span v-if="errors.name && touched.name" class="error">{{ errors.name }}</span>
       </div>
 
       <div class="form-field">
@@ -22,12 +22,12 @@
           type="email" 
           id="email" 
           v-model="email" 
-          @input="validateEmail" 
+          @input="validateEmail"
           @blur="touched.email = true"
-          :class="{'is-invalid': errors.email && touched.email}"
+          :class="{ 'input-error': errors.email && touched.email }"
           placeholder="Enter your email" 
         />
-        <span v-if="errors.email && touched.email" class="error-message">{{ errors.email }}</span> 
+        <span v-if="errors.email && touched.email" class="error">{{ errors.email }}</span>
       </div>
 
       <div class="form-field">
@@ -36,12 +36,12 @@
           type="password" 
           id="password" 
           v-model="password" 
-          @input="validatePassword" 
-          @blur="touched.password = true" 
-          :class="{'is-invalid': errors.password && touched.password}" 
+          @input="validatePassword"
+          @blur="touched.password = true"
+          :class="{ 'input-error': errors.password && touched.password }"
           placeholder="Enter your password" 
         />
-        <span v-if="errors.password && touched.password" class="error-message">{{ errors.password }}</span> 
+        <span v-if="errors.password && touched.password" class="error">{{ errors.password }}</span>
       </div>
 
       <div class="form-field">
@@ -50,157 +50,141 @@
           type="password" 
           id="confirmPassword" 
           v-model="confirmPassword" 
-          @input="validateConfirmPassword" 
-          @blur="touched.confirmPassword = true" 
-          :class="{'is-invalid': errors.confirmPassword && touched.confirmPassword}" 
+          @input="validateConfirmPassword"
+          @blur="touched.confirmPassword = true"
+          :class="{ 'input-error': errors.confirmPassword && touched.confirmPassword }"
           placeholder="Confirm password" 
         />
-        <span v-if="errors.confirmPassword && touched.confirmPassword" class="error-message">{{ errors.confirmPassword }}</span> 
+        <span v-if="errors.confirmPassword && touched.confirmPassword" class="error">{{ errors.confirmPassword }}</span>
       </div>
 
       <div class="form-actions">
         <button type="button" @click="close">Cancel</button>
-        <button type="submit" :disabled="!isFormValid">Register</button>
+        <button type="submit" :disabled="!validateForm()">Register</button>
       </div>
     </form>
   </div>
 </template>
 
-<script>
-import { useAuthStore } from '@/stores/authStore'; 
-import api from '@/api/api';
+<script setup>
+import { ref } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useRouter } from 'vue-router'
+import api from '@/api/api'
 
-export default {
-  name: 'RegisterForm',
-  props: {
-    modelValue: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      value: this.modelValue,
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      errors: {
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      },
-      touched: {
-        name: false,
-        email: false,
-        password: false,
-        confirmPassword: false,
-      }, // Estado para saber si el campo ha sido tocado
-    };
-  },
-  computed: {
-    isFormValid() {
-      return !Object.values(this.errors).some(error => error);
-    },
-  },
-  methods: {
-    close() {
-      this.name = '';
-      this.email = '';
-      this.password = '';
-      this.confirmPassword = '';
-      this.errors = {}; 
-      this.$refs.form.reset(); 
-      this.value = false; 
-      this.$emit('update:modelValue', this.value); 
-    },
-    validateName() {
-      if (this.touched.name) {
-        if (!this.name) {
-          this.errors.name = 'This field is required';
-        } else {
-          this.errors.name = '';
-        }
-      }
-    },
-    validateEmail() {
-      if (this.touched.email) {
-        if (!this.email) {
-          this.errors.email = 'This field is required';
-        } else if (!/.+@.+\..+/.test(this.email)) {
-          this.errors.email = 'Please enter a valid email';
-        } else {
-          this.errors.email = '';
-        }
-      }
-    },
-    validatePassword() {
-      if (this.touched.password) {
-        if (!this.password) {
-          this.errors.password = 'This field is required';
-        } else if (
-          !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(this.password)
-        ) {
-          this.errors.password =
-            'The password must be at least 8 characters long, one uppercase, one lowercase, one number, and one special character';
-        } else {
-          this.errors.password = '';
-        }
-      }
-    },
-    validateConfirmPassword() {
-      if (this.touched.confirmPassword) {
-        if (this.confirmPassword !== this.password) {
-          this.errors.confirmPassword = 'The passwords do not match';
-        } else {
-          this.errors.confirmPassword = '';
-        }
-      }
-    },
-    async submit() {
-      this.validateName();
-      this.validateEmail();
-      this.validatePassword();
-      this.validateConfirmPassword();
+const authStore = useAuthStore()
+const router = useRouter()
 
-      if (!this.isFormValid) return;
+const name = ref('')
+const email = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const errors = ref({})
+const touched = ref({
+  name: false,
+  email: false,
+  password: false,
+  confirmPassword: false
+})
 
-      const formData = {
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        password_confirmation: this.confirmPassword,
-      };
+const validateName = () => {
+  errors.value.name = ''
+  if (!name.value) {
+    errors.value.name = 'This field is required'
+  }
+}
 
-      try {
-        const response = await api.post('/register', formData);
-        
-        // almacena el usuario y el token
-        const authStore = useAuthStore();
-        const token = response.data.token;
-        localStorage.setItem('authToken', token);
-        
-        authStore.user = response.data.user;
-        authStore.token = token;
-        
-        // Redirigir al usuario y limpiar el formulario
-        this.$emit('registered', response.data.user);
-        this.$router.push('/user');
-        this.close();
-        
-        console.log('Usuario registrado con éxito', response.data);
-      } catch (error) {
-        if (error.response && error.response.data.errors) {
-          this.errors = error.response.data.errors; 
-        }
-        console.error('Error registrando al usuario', error);
+const validateEmail = () => {
+  errors.value.email = ''
+  if (!email.value) {
+    errors.value.email = 'This field is required'
+  } else if (!/.+@.+\..+/.test(email.value)) {
+    errors.value.email = 'Please enter a valid email'
+  }
+}
+
+const validatePassword = () => {
+  errors.value.password = ''
+  if (!password.value) {
+    errors.value.password = 'This field is required'
+  } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password.value)) {
+    errors.value.password = 'The password must be at least 8 characters long, one uppercase, one lowercase, one number, and one special character'
+  }
+}
+
+const validateConfirmPassword = () => {
+  errors.value.confirmPassword = ''
+  if (confirmPassword.value !== password.value) {
+    errors.value.confirmPassword = 'The passwords do not match'
+  }
+}
+
+const validateForm = () => {
+  validateName()
+  validateEmail()
+  validatePassword()
+  validateConfirmPassword()
+
+  return !Object.values(errors.value).some(error => error)
+}
+
+const close = () => {
+  name.value = ''
+  email.value = ''
+  password.value = ''
+  confirmPassword.value = ''
+  errors.value = {}
+  Object.keys(touched.value).forEach(key => touched.value[key] = false)
+}
+
+const submit = async () => {
+  if (validateForm()) {
+    const formData = {
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      password_confirmation: confirmPassword.value,
+    }
+
+    try {
+      const response = await api.post('/register', formData)
+      
+      const token = response.data.token
+      localStorage.setItem('authToken', token)
+      
+      authStore.user = response.data.user
+      authStore.token = token
+      
+      router.push('/user')
+      close()
+      
+      console.log('Usuario registrado con éxito', response.data)
+    } catch (error) {
+      if (error.response && error.response.data.errors) {
+        errors.value = error.response.data.errors
       }
-    },
-  },
-};
+      console.error('Error registrando al usuario', error)
+    }
+  }
+}
 </script>
 
 <style scoped>
- @import '../scss/components/_forms.scss'
+.input-error {
+  border-color: red;
+}
+
+.error {
+  color: red;
+  font-size: 0.875rem;
+}
+
+.form-field {
+  margin-bottom: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+}
 </style>
