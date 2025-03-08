@@ -1,49 +1,46 @@
 <template>
   <div class="favorites-list">
-    <h2>Favoritas</h2>
-    <div class="templates">
-      <div v-for="template in favorites" :key="template.id" class="template-card">
-        <img :src="getImagePath(template.icon_path)" alt="Imagen de plantilla" class="template-image" />
-        <h3 class="template-info">{{ template.name }}</h3>
-        <p class="template-info">{{ template.description }}</p>
+    <h2>Favorites templates</h2>
+    <section class="templates">
+      <div v-for="favorite in favorites" :key="favorite.id" class="template-card">
+        <img :src="getImagePath(favorite.template.icon_path)" alt="Imagen de plantilla" class="template-image" />
+        <h3 class="template-info">{{ favorite.template.name }}</h3>
+        <p class="template-info">{{ favorite.template.description }}</p>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
-<script>
-import privateAPI from "@/api/private"; // Usar privateAPI para las solicitudes autenticadas
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
+import privateAPI from '@/api/private'
 
-export default {
-  name: 'FavoritesList',
-  data() {
-    return {
-      favorites: [] // Aquí se guardarán los favoritos
-    };
-  },
-  computed: {
-    // Método para obtener la ruta correcta del icono
-    getImagePath() {
-      return (path) => `http://localhost/${path.replace(/\\/g, '/')}`;
-    }
-  },
-  methods: {
-    // Método para obtener los favoritos desde la API
-    fetchFavorites() {
-      privateAPI.get('/favorites')
-        .then(response => {
-          this.favorites = response.data; // Asignamos la respuesta al array de favoritos
-        })
-        .catch(error => {
-          console.error('Error al obtener los favoritos:', error);
-        });
-    }
-  },
-  created() {
-    // Llamar al método fetchFavorites cuando el componente se monta
-    this.fetchFavorites();
+const router = useRouter()
+const authStore = useAuthStore()
+const favorites = ref([])
+
+// Función para transformar la ruta de la imagen
+const getImagePath = (path) => `http://localhost/${path.replace(/\\/g, '/')}`
+
+const fetchFavorites = async () => {
+  // si el usuario no está logueado, lo mandamos al login
+  if (!authStore.isAuthenticated) {
+    router.push('/login')
+    return
+  }
+  try {
+    const response = await privateAPI.get('/favorites')
+    favorites.value = response.data
+  } catch (error) {
+    console.error('Error al obtener los favoritos:', error)
   }
 }
+
+onMounted(() => {
+  fetchFavorites()
+})
 </script>
 
 <style scoped>

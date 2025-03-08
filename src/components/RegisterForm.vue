@@ -1,18 +1,19 @@
 <template>
   <div class="form-container">
-    <h2>Registro</h2>
+    <h2>Register</h2>
     <form ref="form" @submit.prevent="submit">
       <div class="form-field">
-        <label for="name">Nombre</label>
+        <label for="name">Name</label>
         <input 
           type="text" 
           id="name" 
           v-model="name" 
           @input="validateName" 
-          :class="{'is-invalid': errors.name}" 
-          placeholder="Nombre" 
+          @blur="touched.name = true" 
+          :class="{'is-invalid': errors.name && touched.name}" 
+          placeholder="Enter your name" 
         />
-        <span v-if="errors.name" class="error-message">{{ errors.name }}</span>
+        <span v-if="errors.name && touched.name" class="error-message">{{ errors.name }}</span> 
       </div>
 
       <div class="form-field">
@@ -22,48 +23,51 @@
           id="email" 
           v-model="email" 
           @input="validateEmail" 
-          :class="{'is-invalid': errors.email}" 
-          placeholder="Email" 
+          @blur="touched.email = true"
+          :class="{'is-invalid': errors.email && touched.email}"
+          placeholder="Enter your email" 
         />
-        <span v-if="errors.email" class="error-message">{{ errors.email }}</span>
+        <span v-if="errors.email && touched.email" class="error-message">{{ errors.email }}</span> 
       </div>
 
       <div class="form-field">
-        <label for="password">Contraseña</label>
+        <label for="password">Password</label>
         <input 
           type="password" 
           id="password" 
           v-model="password" 
           @input="validatePassword" 
-          :class="{'is-invalid': errors.password}" 
-          placeholder="Contraseña" 
+          @blur="touched.password = true" 
+          :class="{'is-invalid': errors.password && touched.password}" 
+          placeholder="Enter your password" 
         />
-        <span v-if="errors.password" class="error-message">{{ errors.password }}</span>
+        <span v-if="errors.password && touched.password" class="error-message">{{ errors.password }}</span> 
       </div>
 
       <div class="form-field">
-        <label for="confirmPassword">Confirmar contraseña</label>
+        <label for="confirmPassword">Confirm password</label>
         <input 
           type="password" 
           id="confirmPassword" 
           v-model="confirmPassword" 
           @input="validateConfirmPassword" 
-          :class="{'is-invalid': errors.confirmPassword}" 
-          placeholder="Confirmar Contraseña" 
+          @blur="touched.confirmPassword = true" 
+          :class="{'is-invalid': errors.confirmPassword && touched.confirmPassword}" 
+          placeholder="Confirm password" 
         />
-        <span v-if="errors.confirmPassword" class="error-message">{{ errors.confirmPassword }}</span>
+        <span v-if="errors.confirmPassword && touched.confirmPassword" class="error-message">{{ errors.confirmPassword }}</span> 
       </div>
 
       <div class="form-actions">
-        <button type="button" @click="close">Cancelar</button>
-        <button type="submit" :disabled="!isFormValid">Registrarse</button>
+        <button type="button" @click="close">Cancel</button>
+        <button type="submit" :disabled="!isFormValid">Register</button>
       </div>
     </form>
   </div>
 </template>
 
 <script>
-// Importa la instancia de axios configurada previamente
+import { useAuthStore } from '@/stores/authStore'; 
 import api from '@/api/api';
 
 export default {
@@ -87,6 +91,12 @@ export default {
         password: '',
         confirmPassword: '',
       },
+      touched: {
+        name: false,
+        email: false,
+        password: false,
+        confirmPassword: false,
+      }, // Estado para saber si el campo ha sido tocado
     };
   },
   computed: {
@@ -96,53 +106,59 @@ export default {
   },
   methods: {
     close() {
-      // Limpiar todos los campos del formulario
       this.name = '';
       this.email = '';
       this.password = '';
       this.confirmPassword = '';
-      this.errors = {}; // Limpiar errores
-      this.$refs.form.reset(); // Resetear el formulario
-      this.value = false; // Cerrar el modal
-      this.$emit('update:modelValue', this.value); // Emitir el cambio al padre
+      this.errors = {}; 
+      this.$refs.form.reset(); 
+      this.value = false; 
+      this.$emit('update:modelValue', this.value); 
     },
     validateName() {
-      if (!this.name) {
-        this.errors.name = 'Este campo es requerido.';
-      } else {
-        this.errors.name = '';
+      if (this.touched.name) {
+        if (!this.name) {
+          this.errors.name = 'This field is required';
+        } else {
+          this.errors.name = '';
+        }
       }
     },
     validateEmail() {
-      if (!this.email) {
-        this.errors.email = 'Este campo es requerido.';
-      } else if (!/.+@.+\..+/.test(this.email)) {
-        this.errors.email = 'Ingrese un email válido.';
-      } else {
-        this.errors.email = '';
+      if (this.touched.email) {
+        if (!this.email) {
+          this.errors.email = 'This field is required';
+        } else if (!/.+@.+\..+/.test(this.email)) {
+          this.errors.email = 'Please enter a valid email';
+        } else {
+          this.errors.email = '';
+        }
       }
     },
     validatePassword() {
-      if (!this.password) {
-        this.errors.password = 'Este campo es requerido.';
-      } else if (
-        !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(this.password)
-      ) {
-        this.errors.password =
-          'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.';
-      } else {
-        this.errors.password = '';
+      if (this.touched.password) {
+        if (!this.password) {
+          this.errors.password = 'This field is required';
+        } else if (
+          !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(this.password)
+        ) {
+          this.errors.password =
+            'The password must be at least 8 characters long, one uppercase, one lowercase, one number, and one special character';
+        } else {
+          this.errors.password = '';
+        }
       }
     },
     validateConfirmPassword() {
-      if (this.confirmPassword !== this.password) {
-        this.errors.confirmPassword = 'Las contraseñas no coinciden.';
-      } else {
-        this.errors.confirmPassword = '';
+      if (this.touched.confirmPassword) {
+        if (this.confirmPassword !== this.password) {
+          this.errors.confirmPassword = 'The passwords do not match';
+        } else {
+          this.errors.confirmPassword = '';
+        }
       }
     },
     async submit() {
-      // Se valida todo el formulario antes de enviarlo
       this.validateName();
       this.validateEmail();
       this.validatePassword();
@@ -150,7 +166,6 @@ export default {
 
       if (!this.isFormValid) return;
 
-      // Crear el objeto con los datos del formulario
       const formData = {
         name: this.name,
         email: this.email,
@@ -159,37 +174,28 @@ export default {
       };
 
       try {
-        // Enviar el formulario a la API para registrar el usuario
         const response = await api.post('/register', formData);
         
-        // Si el registro es exitoso, guardar el token
+        // almacena el usuario y el token
+        const authStore = useAuthStore();
         const token = response.data.token;
         localStorage.setItem('authToken', token);
-
-        // Notificar al padre que el registro fue exitoso
+        
+        authStore.user = response.data.user;
+        authStore.token = token;
+        
+        // Redirigir al usuario y limpiar el formulario
         this.$emit('registered', response.data.user);
-
-        // Redirigir a la página del usuario
         this.$router.push('/user');
-
-        // Limpiar el formulario y cerrar el modal
         this.close();
-
+        
         console.log('Usuario registrado con éxito', response.data);
       } catch (error) {
         if (error.response && error.response.data.errors) {
-          this.errors = error.response.data.errors; // Mostrar los errores en el formulario
+          this.errors = error.response.data.errors; 
         }
         console.error('Error registrando al usuario', error);
       }
-    },
-  },
-  watch: {
-    modelValue(val) {
-      this.value = val;
-    },
-    value(val) {
-      this.$emit('update:modelValue', val);
     },
   },
 };

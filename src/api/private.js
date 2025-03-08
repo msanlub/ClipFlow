@@ -1,30 +1,26 @@
 import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore';
 
 const privateAPI = axios.create({
   baseURL: 'http://localhost/api/v1/auth', 
 });
 
-// Interceptor para agregar el token a las solicitudes
+// Interceptor para agregar el token
 privateAPI.interceptors.request.use(config => {
-  const token = localStorage.getItem('access_token');
+  const authStore = useAuthStore(); 
 
-  if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`;
+  if (authStore.token) {
+    config.headers['Authorization'] = `Bearer ${authStore.token}`;
   }
   return config;
-}, error => {
-  return Promise.reject(error);
-});
+}, error => Promise.reject(error));
 
-// Interceptor para manejar las respuestas
-privateAPI.interceptors.response.use(response => {
-  return response; // todo perfe
-}, error => {
+// Interceptor para manejar errores de autenticación
+privateAPI.interceptors.response.use(response => response, error => {
   if (error.response && error.response.status === 401) {
-    // Si el token es inválido o ha expirado, redirigeal login
     console.log('Token expirado o inválido');
-    
-    window.location.href = '/login'; 
+    const authStore = useAuthStore();
+    authStore.logOut(); // Cierra sesión automáticamente
   }
   return Promise.reject(error);
 });

@@ -1,6 +1,5 @@
 <template>
   <header class="header">
-    
     <!-- Logo -->
     <div>
       <img src="../assets/logo.png" alt="Logo" class="logo" />
@@ -9,45 +8,62 @@
     <!-- Menú -->
     <nav class="menu">
       <router-link to="/" class="menu-link">Home</router-link>
-      <router-link to="/register" class="menu-link">Registro</router-link>
-      <router-link to="/login" class="menu-link">Login</router-link>
+      
+      <template v-if="!authStore.isAuthenticated">
+        <router-link to="/register" class="menu-link">Registro</router-link>
+        <router-link to="/login" class="menu-link">Login</router-link>
+      </template>
+      
+      <!-- Si está autenticado, muestra User y LogOut -->
+      <template v-else>
+        <router-link to="/user" class="menu-link">User</router-link>
+        <button @click="logout" class="menu-link">LogOut</button>
+      </template>
     </nav>
 
     <!-- Botón para cambiar tema -->
     <button
-        @click="toggleTheme"
-        @keydown.enter="toggleTheme"
-        class="theme-icon"
-        :class="{ 'theme-icon--dark': isDark, 'theme-icon--light': !isDark }"
-        tabindex="0"
-        role="button"
-      >
-        <font-awesome-icon :icon="isDark ? ['fas', 'moon'] : ['fas', 'sun']" />
-      </button>
-
-    
+      @click="toggleTheme"
+      @keydown.enter="toggleTheme"
+      class="theme-icon"
+      :class="{ 'theme-icon--dark': themeStore.isDark, 'theme-icon--light': !themeStore.isDark }"
+      tabindex="0"
+      role="button"
+    >
+      <font-awesome-icon :icon="themeStore.isDark ? ['fas', 'moon'] : ['fas', 'sun']" />
+    </button>
   </header>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { fas } from '@fortawesome/free-solid-svg-icons';
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
+import { useThemeStore } from '@/stores/themeStore'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core'
 
 // Registrar iconos en la librería
-import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(fas);
+library.add(fas)
 
-const isDark = ref(false);
+const authStore = useAuthStore()
+const themeStore = useThemeStore()
+const router = useRouter()
+
+// Al montar el componente, asegura que el atributo data-theme esté sincronizado
+onMounted(() => {
+  document.documentElement.setAttribute('data-theme', themeStore.theme)
+})
 
 const toggleTheme = () => {
-  isDark.value = !isDark.value;
-  document.documentElement.classList.toggle('dark', isDark.value);
-};
+  themeStore.toggleTheme()
+}
 
-onMounted(() => {
-  isDark.value = document.documentElement.classList.contains('dark');
-});
+const logout = () => {
+  authStore.logOut()
+  router.push('/')
+}
 </script>
 
 <style lang="scss" scoped>
