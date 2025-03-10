@@ -8,9 +8,15 @@ export const useAuthStore = defineStore('authStore', {
     isLoading: false, 
   }),
   getters: {
-    isAuthenticated: (state) => !!state.token
+    isAuthenticated: (state) => !!state.token,
   },
   actions: {
+    async setAuth(user, token) {
+      this.user = user;
+      this.token = token;
+      localStorage.setItem('authToken', token);
+    },
+    
     async logIn(email, password) {
       this.isLoading = true;
       try {
@@ -18,23 +24,17 @@ export const useAuthStore = defineStore('authStore', {
           email,
           password,
         });
-
-        const { user, access_token } = response.data;
-
-        this.user = user;
-        this.token = access_token;
-
-        // Guardar token en localStorage
-        localStorage.setItem('authToken', access_token);
-
-        return true; 
+        
+        await this.setAuth(response.data.user, response.data.access_token);
+        return true;
       } catch (error) {
         console.error('Error iniciando sesión:', error.response?.data || error);
         throw error.response?.data?.message || 'Error inesperado';
       } finally {
-        this.isLoading = false; 
+        this.isLoading = false;
       }
     },
+
     logOut() {
       this.user = null;
       this.token = null;

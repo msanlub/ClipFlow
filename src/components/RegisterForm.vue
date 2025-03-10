@@ -83,17 +83,17 @@ export default {
         // Enviar datos al endpoint de registro
         const response = await api.post('/register', formData);
 
-        // Obtener el token y los datos del usuario de la respuesta
+        // Obtener el usuario y token de la respuesta
+        const user = response.data.user;
         const token = response.data.access_token;
 
         // Usar el authStore para guardar los datos del usuario y el token
         const authStore = useAuthStore();
-        authStore.logIn(response.data.user, token);
+        await authStore.setAuth(user, token);
 
         // Redirigir al usuario a la página de usuario (o cualquier otra página)
         this.$router.push('/user');
 
-        // Limpiar los campos del formulario
         this.clean();
 
         console.log('Usuario registrado con éxito:', response.data);
