@@ -1,7 +1,14 @@
 <template>
   <div class="favorites-list">
     <h2>Favorites templates</h2>
-    <section class="templates">
+
+    <!-- Mostrar mensaje si no hay favoritos -->
+    <div v-if="favorites.length === 0" class="no-favorites">
+      No tienes favoritos aún.
+    </div>
+
+    <!-- Mostrar lista de favoritos -->
+    <section v-else class="templates">
       <div v-for="favorite in favorites" :key="favorite.id" class="template-card">
         <img :src="getImagePath(favorite.template.icon_path)" alt="Imagen de plantilla" class="template-image" />
         <h3 class="template-info">{{ favorite.template.name }}</h3>
@@ -12,42 +19,52 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/authStore'
-import privateAPI from '@/api/private'
+import { useAuthStore } from '@/stores/authStore';
+import privateAPI from '@/api/private';
 
 export default {
+  name: 'FavoritesList',
   data() {
     return {
       favorites: [],
-    }
+    };
+  },
+  computed: {
+    authStore() {
+      return useAuthStore(); 
+    },
   },
   methods: {
     // Función para transformar la ruta de la imagen
     getImagePath(path) {
-      return `http://localhost/${path.replace(/\\/g, '/')}`
+      return path ? `http://localhost/${path.replace(/\\/g, '/')}` : '';
     },
     async fetchFavorites() {
-      const authStore = useAuthStore()
-      const router = useRouter()
-      
-      // Si el usuario no está logueado, lo mandamos al login
-      if (!authStore.isAuthenticated) {
-        router.push('/login')
-        return
+      // Verificar si el usuario está autenticado
+      if (!this.authStore.token) {
+        this.$router.push('/login');
+        return;
       }
+
       try {
-        const response = await privateAPI.get('/favorites')
-        this.favorites = response.data
+        const response = await privateAPI.get('/favorites');
+        this.favorites = response.data;
       } catch (error) {
-        console.error('Error al obtener los favoritos:', error)
+        console.error('Error al obtener los favoritos:', error);
+
+        // Si el error es un 401, cerrar sesión y redirigir al login
+        if (error.response && error.response.status === 401) {
+          this.authStore.logOut();
+          this.$router.push('/login');
+        }
       }
     },
   },
-  mounted() {
-    this.fetchFavorites()
+  created() {
+    // Llamar a fetchFavorites al crear el componente
+    this.fetchFavorites();
   },
-}
+};
 </script>
 
 <style scoped>
@@ -80,15 +97,8 @@ export default {
   margin: 10px 0;
 }
 
-.favorite-button {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 24px;
-  color: red;
-}
-
-.favorite-button:hover {
-  color: #ff4d4d;
+.no-favorites {
+  font-size: 18px;
+  color: #888;
 }
 </style>
