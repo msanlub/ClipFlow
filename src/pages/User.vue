@@ -2,14 +2,16 @@
   <div class="user-page">
     <h1>Welcome, {{ userName }}</h1>
     
-    <!-- Lista de favoritos -->
-    <FavoritesList :favorites="userFavorites" />
+    <!-- Verificar si los favoritos están cargando o si no hay favoritos -->
+    <div v-if="loading">Loading your favorites...</div>
+    <div v-else-if="userFavorites.length === 0">You have no favorites yet.</div>
+    <FavoritesList v-else :favorites="userFavorites" />
   </div>
 </template>
 
 <script>
 import FavoritesList from '@/components/FavoritesList.vue';
-import privateAPI from '@/api/private'; // Asegúrate de importar el cliente con autenticación
+import privateAPI from '@/api/private';
 import { useAuthStore } from '@/stores/authStore';
 
 export default {
@@ -20,7 +22,8 @@ export default {
   data() {
     return {
       userName: '',
-      userFavorites: []
+      userFavorites: [],
+      loading: true // Indicador de carga
     };
   },
   async created() {
@@ -42,6 +45,9 @@ export default {
       this.userFavorites = favoritesResponse.data;
     } catch (error) {
       console.error('Error al obtener datos del usuario:', error);
+      this.$router.push('/login'); // Redirigir a login si ocurre un error
+    } finally {
+      this.loading = false; // Después de la carga, cambiar el estado de loading
     }
   }
 };
@@ -58,5 +64,11 @@ h1 {
   font-size: 2rem;
   color: #333;
   margin-bottom: 2rem;
+}
+
+div {
+  font-size: 1.2rem;
+  color: #888;
+  margin-top: 2rem;
 }
 </style>

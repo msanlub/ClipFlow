@@ -20,7 +20,7 @@ privateAPI.interceptors.response.use(response => response, error => {
   if (error.response && error.response.status === 401) {
     console.log('Token expirado o inválido');
     const authStore = useAuthStore();
-    authStore.logOut(); // Cierra sesión automáticamente
+    authStore.logOut(); 
   }
   return Promise.reject(error);
 });

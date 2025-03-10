@@ -178,8 +178,6 @@ export default {
       }
     },
 
-
-
     openModal(template) {
       this.selectedTemplate = template;
       this.isModalOpen = true;
@@ -208,7 +206,7 @@ export default {
       formData.append('text1', this.formData.text1);
       formData.append('text2', this.formData.text2);
 
-      // Llama a la API para procesar el vidoe
+      // Llama a la API para procesar el video
       api.post(`/templates/${this.selectedTemplate.id}/generate`, formData)
         .then(response => {
           this.loading = false;

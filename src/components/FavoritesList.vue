@@ -11,36 +11,43 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
+<script>
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import privateAPI from '@/api/private'
 
-const router = useRouter()
-const authStore = useAuthStore()
-const favorites = ref([])
-
-// Función para transformar la ruta de la imagen
-const getImagePath = (path) => `http://localhost/${path.replace(/\\/g, '/')}`
-
-const fetchFavorites = async () => {
-  // si el usuario no está logueado, lo mandamos al login
-  if (!authStore.isAuthenticated) {
-    router.push('/login')
-    return
-  }
-  try {
-    const response = await privateAPI.get('/favorites')
-    favorites.value = response.data
-  } catch (error) {
-    console.error('Error al obtener los favoritos:', error)
-  }
+export default {
+  data() {
+    return {
+      favorites: [],
+    }
+  },
+  methods: {
+    // Función para transformar la ruta de la imagen
+    getImagePath(path) {
+      return `http://localhost/${path.replace(/\\/g, '/')}`
+    },
+    async fetchFavorites() {
+      const authStore = useAuthStore()
+      const router = useRouter()
+      
+      // Si el usuario no está logueado, lo mandamos al login
+      if (!authStore.isAuthenticated) {
+        router.push('/login')
+        return
+      }
+      try {
+        const response = await privateAPI.get('/favorites')
+        this.favorites = response.data
+      } catch (error) {
+        console.error('Error al obtener los favoritos:', error)
+      }
+    },
+  },
+  mounted() {
+    this.fetchFavorites()
+  },
 }
-
-onMounted(() => {
-  fetchFavorites()
-})
 </script>
 
 <style scoped>
