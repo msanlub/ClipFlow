@@ -7,11 +7,11 @@
     <div class="templates">
       <div v-for="template in paginatedTemplates" :key="template.id" class="template-card">
         <!-- Mostrar el icono -->
-        <img :src="getImagePath(template.icon_path)" :alt="template.name" class="template-icon" />
-        
+        <img :src="template.icon_url" :alt="template.name" class="template-icon" />
+
         <h3 class="template-info">{{ template.name }}</h3>
         <p class="template-info">{{ template.description }}</p>
-        
+
         <!-- Icono de corazón para favoritos -->
         <button @click="toggleFavorite(template)" class="favorite-button">
           <i :class="template.favorite ? 'fas fa-heart' : 'far fa-heart'"></i>
@@ -54,12 +54,12 @@
           <!-- Texto 1 -->
           <div>
             <label for="text1">Text 1</label>
-            <input type="text" id="text1" v-model="formData.text1" />
+            <input type="text" id="text1" v-model.trim="formData.text1" maxlength="10" />
           </div>
           <!-- Texto 2 -->
           <div>
             <label for="text2">Text 2</label>
-            <input type="text" id="text2" v-model="formData.text2" />
+            <input type="text" id="text2" v-model.trim="formData.text2" maxlength="10" />
           </div>
 
           <!-- Botón de generar -->
@@ -87,6 +87,7 @@
 import { useAuthStore } from '@/stores/authStore';
 import api from '@/api/api';
 import privateAPI from '@/api/private';
+import Swal from 'sweetalert2';
 
 export default {
   name: 'TemplateList',
@@ -95,7 +96,7 @@ export default {
       templates: [],
       page: 1,
       templatesPerPage: 3,
-      isModalOpen: false, 
+      isModalOpen: false,
       loading: false,
       selectedTemplate: null,
       formData: {
@@ -109,7 +110,6 @@ export default {
     };
   },
   computed: {
-    // Calcular el total de páginas
     totalPages() {
       return Math.ceil(this.templates.length / this.templatesPerPage);
     },
@@ -117,87 +117,81 @@ export default {
       const start = (this.page - 1) * this.templatesPerPage;
       const end = start + this.templatesPerPage;
       return this.templates.slice(start, end);
-    },
+    }
   },
   methods: {
-    // Método para manejar el cambio de archivo
     handleFileChange(event, field) {
-      const file = event.target.files[0]; 
+      const file = event.target.files[0];
       if (file) {
-        this.formData[field] = file; 
+        // Validar formato y tamaño del archivo
+        const validFormats = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+        if (!validFormats.includes(file.type)) {
+          Swal.fire('Invalid File', 'Only JPEG, PNG, GIF, and SVG formats are allowed.', 'error');
+          return;
+        }
+        if (file.size > 2048 * 1024) { // Tamaño máximo: 2MB
+          Swal.fire('File Too Large', 'The file size must not exceed 2MB.', 'error');
+          return;
+        }
+        this.formData[field] = file;
       }
     },
-
-    // Método para obtener las plantillas de la API
     fetchTemplates() {
-      api.get('/templates') 
+      api.get('/templates')
         .then(response => {
-          this.templates = response.data; 
+          this.templates = response.data;
         })
-        .catch(error => {
-          console.error('Error fetching templates:', error);
+        .catch(() => {
+          Swal.fire('Error', 'Failed to fetch templates. Please try again later.', 'error');
         });
     },
-
-    // Función para obtener la ruta correcta del icono
-    getImagePath(path) {
-      return `http://localhost/${path.replace(/\\/g, '/')}`;
-    },
-
     toggleFavorite(template) {
-      const authStore = useAuthStore(); 
-
+      const authStore = useAuthStore();
       if (!authStore.token) {
-        // Si no está autenticado, redirigir al login
-        console.log('Usuario no autenticado, redirigiendo a /login');
+        Swal.fire('Authentication Required', 'Please log in to manage favorites.', 'info');
         this.$router.push('/login');
         return;
       }
 
-      // Configurar el token en la cabecera si está autenticado
       privateAPI.defaults.headers.common['Authorization'] = `Bearer ${authStore.token}`;
-
       if (template.favorite) {
         privateAPI.delete(`/favorites/${template.favorite_id}`)
           .then(() => {
             template.favorite = false;
             template.favorite_id = null;
+            Swal.fire('Removed', 'Template removed from favorites.', 'success');
           })
-          .catch(error => {
-            console.error('Error al eliminar de favoritos:', error);
+          .catch(() => {
+            Swal.fire('Error', 'Failed to remove favorite. Please try again.', 'error');
           });
       } else {
         privateAPI.post('/favorites', { template_id: template.id })
           .then(response => {
             template.favorite = true;
             template.favorite_id = response.data.id;
+            Swal.fire('Added', 'Template added to favorites.', 'success');
           })
-          .catch(error => {
-            console.error('Error al agregar a favoritos:', error);
+          .catch(() => {
+            Swal.fire('Error', 'Failed to add favorite. Please try again.', 'error');
           });
       }
     },
-
     openModal(template) {
       this.selectedTemplate = template;
       this.isModalOpen = true;
     },
-
     closeModal() {
       this.isModalOpen = false;
-      this.formData = {
-        image1: null,
-        image2: null,
-        image3: null,
-        image4: null,
-        text1: '',
-        text2: ''
-      };
+      this.formData = { image1: null, image2: null, image3: null, image4: null, text1: '', text2: '' };
     },
-
     generateTemplate() {
+      if (!this.formData.image1 || !this.formData.image2 || !this.formData.image3 || !this.formData.image4) {
+        Swal.fire('Missing Files', 'Please upload all required images.', 'error');
+        return;
+      }
+
       this.loading = true;
-      
+
       const formData = new FormData();
       formData.append('image1', this.formData.image1);
       formData.append('image2', this.formData.image2);
@@ -206,30 +200,27 @@ export default {
       formData.append('text1', this.formData.text1);
       formData.append('text2', this.formData.text2);
 
-      // Llama a la API para procesar el video
       api.post(`/templates/${this.selectedTemplate.id}/generate`, formData)
         .then(response => {
           this.loading = false;
-          console.log('Plantilla generada con éxito', response);
+          Swal.fire('Success', `Video generated successfully!`, 'success');
+          console.log(response.data);
           this.closeModal();
         })
-        .catch(error => {
+        .catch(() => {
           this.loading = false;
-          console.error('Error generando la plantilla:', error);
+          Swal.fire('Error', 'Failed to generate the video. Please try again later.', 'error');
         });
     },
-
     goToPage(pageNumber) {
       if (pageNumber >= 1 && pageNumber <= this.totalPages) {
         this.page = pageNumber;
       }
     }
   },
-
-  // Llamar al método fetchTemplates cuando el componente se monta
   created() {
     this.fetchTemplates();
-  },
+  }
 };
 </script>
 

@@ -87,7 +87,7 @@ export default {
         const user = response.data.user;
         const token = response.data.access_token;
 
-        // Usar el authStore para guardar los datos del usuario y el token
+        // guardar los datos del usuario y el token en el store
         const authStore = useAuthStore();
         await authStore.setAuth(user, token);
 

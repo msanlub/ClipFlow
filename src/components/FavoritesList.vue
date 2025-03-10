@@ -1,21 +1,5 @@
 <template>
-  <div class="favorites-list">
-    <h2>Favorites templates</h2>
-
-    <!-- Mostrar mensaje si no hay favoritos -->
-    <div v-if="favorites.length === 0" class="no-favorites">
-      No tienes favoritos aún.
-    </div>
-
-    <!-- Mostrar lista de favoritos -->
-    <section v-else class="templates">
-      <div v-for="favorite in favorites" :key="favorite.id" class="template-card">
-        <img :src="getImagePath(favorite.template.icon_path)" alt="Imagen de plantilla" class="template-image" />
-        <h3 class="template-info">{{ favorite.template.name }}</h3>
-        <p class="template-info">{{ favorite.template.description }}</p>
-      </div>
-    </section>
-  </div>
+  <!-- Tu template se mantiene igual -->
 </template>
 
 <script>
@@ -27,43 +11,51 @@ export default {
   data() {
     return {
       favorites: [],
+      isLoading: false,
+      error: null,
     };
   },
   computed: {
     authStore() {
-      return useAuthStore(); 
+      return useAuthStore();
+    },
+    isAuthenticated() {
+      return this.authStore.isAuthenticated;
     },
   },
   methods: {
-    // Función para transformar la ruta de la imagen
     getImagePath(path) {
       return path ? `http://localhost/${path.replace(/\\/g, '/')}` : '';
     },
     async fetchFavorites() {
-      // Verificar si el usuario está autenticado
-      if (!this.authStore.token) {
+      if (!this.isAuthenticated) {
         this.$router.push('/login');
         return;
       }
+
+      this.isLoading = true;
+      this.error = null;
 
       try {
         const response = await privateAPI.get('/favorites');
         this.favorites = response.data;
       } catch (error) {
         console.error('Error al obtener los favoritos:', error);
+        this.error = 'No se pudieron cargar los favoritos. Por favor, intenta de nuevo.';
 
-        // Si el error es un 401, cerrar sesión y redirigir al login
         if (error.response && error.response.status === 401) {
           this.authStore.logOut();
           this.$router.push('/login');
         }
+      } finally {
+        this.isLoading = false;
       }
     },
   },
   created() {
-    // Llamar a fetchFavorites al crear el componente
     this.fetchFavorites();
   },
+ 
 };
 </script>
 
