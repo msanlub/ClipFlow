@@ -76,29 +76,37 @@ export default {
         name: this.name,
         email: this.email,
         password: this.password,
-        password_confirmation: this.confirmPassword
-      }
+        password_confirmation: this.confirmPassword,
+      };
 
       try {
-        const response = await api.post('/register', formData)
-        const token = response.data.access_token
-        localStorage.setItem('authToken', token)
+        // Enviar datos al endpoint de registro
+        const response = await api.post('/register', formData);
 
-        // Usando Pinia
-        const authStore = useAuthStore()
-        // Asignamos directamente o llamamos a una acción definida en el store
-        authStore.user = response.data.user
-        authStore.token = token
+        // Obtener el token y los datos del usuario de la respuesta
+        const token = response.data.access_token;
 
-        this.$router.push('/user')
-        this.clean()
-        console.log(token)
-        console.log('Usuario registrado con éxito', response.data)
+        // Usar el authStore para guardar los datos del usuario y el token
+        const authStore = useAuthStore();
+        authStore.logIn(response.data.user, token);
+
+        // Redirigir al usuario a la página de usuario (o cualquier otra página)
+        this.$router.push('/user');
+
+        // Limpiar los campos del formulario
+        this.clean();
+
+        console.log('Usuario registrado con éxito:', response.data);
       } catch (error) {
-      
-        console.error('Error registrando al usuario', error)
+        // Manejar errores
+        if (error.response) {
+          console.error('Error registrando al usuario:', error.response.data);
+        } else {
+          console.error('Error inesperado:', error);
+        }
       }
-    }
+  },
+
   }
 }
 </script>

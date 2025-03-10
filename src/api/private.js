@@ -11,6 +11,8 @@ privateAPI.interceptors.request.use(config => {
 
   if (authStore.token) {
     config.headers['Authorization'] = `Bearer ${authStore.token}`;
+  } else {
+    console.warn('No hay token disponible en authStore');
   }
   return config;
 }, error => Promise.reject(error));

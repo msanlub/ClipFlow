@@ -30,7 +30,7 @@ export default {
     const authStore = useAuthStore();
 
     if (!authStore.token) {
-      // Si no hay token, redirigir al login
+      console.warn('No hay token disponible, redirigiendo al login...');
       this.$router.push('/login');
       return;
     }
@@ -45,11 +45,16 @@ export default {
       this.userFavorites = favoritesResponse.data;
     } catch (error) {
       console.error('Error al obtener datos del usuario:', error);
-      this.$router.push('/login'); // Redirigir a login si ocurre un error
+
+      // Solo redirige si el error es específicamente un problema de autenticación
+      if (error.response && error.response.status === 401) {
+        this.$router.push('/login');
+      }
     } finally {
-      this.loading = false; // Después de la carga, cambiar el estado de loading
+      this.loading = false; 
     }
   }
+
 };
 </script>
 

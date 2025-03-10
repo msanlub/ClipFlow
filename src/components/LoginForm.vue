@@ -22,6 +22,11 @@
         />
       </div>
 
+      <!-- Mostrar mensaje de error si existe -->
+      <div v-if="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
       <div class="form-actions">
         <button type="submit" :disabled="authStore.isLoading">
           {{ authStore.isLoading ? 'Cargando...' : 'Login' }}
@@ -32,37 +37,41 @@
 </template>
 
 <script>
-import { useAuthStore } from '@/stores/authStore'
-import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore';
 
 export default {
   name: 'Login',
   data() {
     return {
       email: '',
-      password: ''
-    }
+      password: '',
+      errorMessage: '', 
+    };
   },
   computed: {
     authStore() {
-      return useAuthStore()
-    }
+      return useAuthStore();
+    },
   },
   methods: {
     async submit() {
       try {
-        const response = await this.authStore.logIn(this.email, this.password)
-        if (response) {
-          this.$router.push('/user')
-          this.email = ''
-          this.password = ''
-        }
+        // Llamar a la acción logIn del authStore
+        await this.authStore.logIn(this.email, this.password);
+
+        // Redirigir al usuario después del inicio de sesión exitoso
+        this.$router.push('/user');
+
+        // Limpiar los campos del formulario
+        this.email = '';
+        this.password = '';
       } catch (error) {
-        console.error('Error logging in:', error)
+        // Mostrar mensaje de error al usuario
+        this.errorMessage = error;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -78,5 +87,10 @@ export default {
 .form-actions {
   display: flex;
   justify-content: space-between;
+}
+
+.error-message {
+  color: red;
+  margin-top: 1rem;
 }
 </style>
