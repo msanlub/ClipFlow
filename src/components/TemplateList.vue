@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container__templates">
     <!-- Título -->
     <h2>Choose your template</h2>
 
@@ -9,8 +9,8 @@
         <!-- Mostrar el icono -->
         <img :src="template.icon_url" :alt="template.name" class="template-icon" />
 
-        <h3 class="template-info">{{ template.name }}</h3>
-        <p class="template-info">{{ template.description }}</p>
+        <h3 class="template-infoTitle">{{ template.name }}</h3>
+        <p class="template-infoP">{{ template.description }}</p>
 
         <!-- Icono de corazón para favoritos -->
         <button @click="toggleFavorite(template)" class="favorite-button">
@@ -26,9 +26,9 @@
 
     <!-- Paginación -->
     <div class="pagination">
-      <button @click="goToPage(page - 1)" :disabled="page === 1">Previous</button>
-      <span>{{ page }} / {{ totalPages }}</span>
-      <button @click="goToPage(page + 1)" :disabled="page === totalPages">Next</button>
+      <button @click="goToPage(page - 1)" :disabled="page === 1" class="pagination__buttonPrevius">Previous</button>
+      <span class="pagination__number">{{ page }} / {{ totalPages }}</span>
+      <button @click="goToPage(page + 1)" :disabled="page === totalPages" class="pagination__buttonNext">Next</button>
     </div>
 
     <!-- Componente del modal -->
@@ -46,7 +46,7 @@ import TemplateFormModal from '@/components/ModalFormCreate.vue';
 export default {
   name: 'TemplateList',
   components: {
-    TemplateFormModal, // Regístralo
+    TemplateFormModal, 
   },
   data() {
     return {
@@ -127,6 +127,6 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Estilos */
+<style >
+ @import '../../src/scss/main.scss';
 </style>
