@@ -1,18 +1,55 @@
 <template>
-  <!-- Tu template se mantiene igual -->
+  <div>
+    <!-- Título -->
+    <h2>Your Favorite Templates</h2>
+
+    <!-- Lista de Plantillas Favoritas -->
+    <div class="templates" v-if="favorites.length > 0">
+      <div v-for="template in favorites" :key="template.id" class="template-card">
+        <!-- Mostrar el icono -->
+        <img :src="template.icon_url" :alt="template.name" class="template-icon" />
+
+        <h3 class="template-info">{{ template.name }}</h3>
+        <p class="template-info">{{ template.description }}</p>
+
+        <!-- Icono de corazón para eliminar de favoritos -->
+        <button @click="removeFavorite(template)" class="favorite-button">
+          <i class="fas fa-heart"></i>
+        </button>
+
+        <!-- Botón para usar la plantilla, abrir modal -->
+        <button @click="openModal(template)" class="use-button">
+          <i class="fas fa-play"></i> Use
+        </button>
+      </div>
+    </div>
+    <div v-else class="no-favorites">
+      <p>No favorite templates yet.</p>
+    </div>
+
+    <!-- Componente del modal -->
+    <TemplateFormModal :is-open="isModalOpen" :template="selectedTemplate" @close="closeModal" />
+  </div>
 </template>
 
 <script>
 import { useAuthStore } from '@/stores/authStore';
 import privateAPI from '@/api/private';
+import Swal from 'sweetalert2';
+import TemplateFormModal from '@/components/ModalFormCreate.vue'; 
 
 export default {
   name: 'FavoritesList',
+  components: {
+    TemplateFormModal, // Regístralo
+  },
   data() {
     return {
       favorites: [],
       isLoading: false,
       error: null,
+      isModalOpen: false,
+      selectedTemplate: null,
     };
   },
   computed: {
@@ -51,46 +88,51 @@ export default {
         this.isLoading = false;
       }
     },
+    async removeFavorite(template) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "This will remove the template from your favorites.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, remove it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          privateAPI.delete(`/favorites/${template.favorite_id}`)
+            .then(() => {
+              this.favorites = this.favorites.filter(fav => fav.id !== template.id);
+              Swal.fire(
+                'Removed!',
+                'The template has been removed from your favorites.',
+                'success'
+              );
+            })
+            .catch((error) => {
+              console.error('Error removing favorite:', error);
+              Swal.fire(
+                'Error!',
+                'There was an error removing the template from your favorites.',
+                'error'
+              );
+            });
+        }
+      });
+    },
+    openModal(template) {
+      this.selectedTemplate = template;
+      this.isModalOpen = true;
+    },
+    closeModal() {
+      this.isModalOpen = false;
+    },
   },
   created() {
     this.fetchFavorites();
   },
- 
 };
 </script>
 
 <style scoped>
-@import '../scss/main.scss';
-
-/* Estilos adicionales para la lista de favoritos */
-.templates {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.template-card {
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 10px;
-  width: 200px;
-  text-align: center;
-  background-color: #f9f9f9;
-}
-
-.template-image {
-  max-width: 100%;
-  height: auto;
-  border-radius: 5px;
-}
-
-.template-info {
-  font-size: 16px;
-  margin: 10px 0;
-}
-
-.no-favorites {
-  font-size: 18px;
-  color: #888;
-}
+/* Estilos */
 </style>
