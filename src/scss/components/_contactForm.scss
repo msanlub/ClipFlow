@@ -1,5 +1,5 @@
 .container__form {
-    max-width: 30rem;
+    max-width: 50rem;
     width: 100%;
     margin: 2rem auto;
     padding: 2rem;
@@ -84,16 +84,16 @@
           color: var(--white-text);
   
           &:hover {
-            background-color: var(--back-cancel);
+            background-color: var(--back-cancelHover);
           }
         }
   
         &[type="submit"] {
-          background-color: var(--primary-color);
+          background-color: var(--back-confirm);
           color: var(--white-text);
   
           &:hover {
-            background-color: var(--primary-color);
+            background-color: var(--back-confirmHover);
           }
   
           &:disabled {

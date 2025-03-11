@@ -1,0 +1,12 @@
+.container__home{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.home__contacts {
+    @include title-text(600);
+      text-align: center;
+      color: var(--primary-color);
+      margin-top: 5rem;
+}

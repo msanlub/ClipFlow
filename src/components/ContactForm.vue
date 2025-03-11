@@ -1,6 +1,6 @@
 <template>
   <div class="container__form">
-    <h2>Contacto</h2>
+    <h2>Contact</h2>
     <form @submit.prevent="submit">
       <div class="form__group">
         <label for="name">Name</label>

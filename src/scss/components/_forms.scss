@@ -100,7 +100,7 @@ button {
     color: var(--white-text);
 
     &:hover {
-      background-color: var(--back-confirm);
+      background-color: var(--back-confirmHover);
     }
   }
 
@@ -109,7 +109,7 @@ button {
     color: var(--white-text);
 
     &:hover {
-      background-color: var(--back-cancel);
+      background-color: var(--back-cancelHover);
     }
   }
 

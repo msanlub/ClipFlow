@@ -62,7 +62,7 @@
       </div>
 
       <div class="form-actions">
-        <button type="button" @click="close">Cancel</button>
+        <button type="button" @click="clean">Cancel</button>
         <button type="submit">Register</button>
       </div>
     </form>

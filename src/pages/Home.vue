@@ -12,6 +12,9 @@ export default {
 </script>
 
 <template>
-  <TemplateList />
-  <ContactForm />
+  <div class="container__home" >
+    <TemplateList />
+    <h2 class="home__contacts">Do you have any suggestions? Tell us!</h2>
+    <ContactForm />
+  </div>
 </template>

@@ -37,6 +37,7 @@
       </div>
 
       <div class="form-actions">
+        <button type="button" @click="clean">Cancel</button>
         <button type="submit" :disabled="authStore.isLoading">
           {{ authStore.isLoading ? 'Cargando...' : 'Login' }}
         </button>
@@ -67,6 +68,12 @@ export default {
     },
   },
   methods: {
+    clean() {
+      this.name = ''
+      this.email = ''
+      this.password = ''
+      this.confirmPassword = ''
+    },
     validateEmail() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!this.email.trim()) {
