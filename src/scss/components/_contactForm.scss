@@ -1,0 +1,116 @@
+.container__form {
+    max-width: 30rem;
+    width: 100%;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--fondo-back);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+    h2 {
+      @include title-text(600);
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+    }
+  
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  
+    .form__group {
+      display: flex;
+      flex-direction: column;
+  
+      label {
+        @include description-text;
+        margin-bottom: 0.5rem;
+        color: var(--black-text);
+      }
+  
+      input,
+      textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--input-color);
+        border-radius: 5px;
+        background-color: var(--fondo-back);
+        transition: border-color 0.3s ease;
+  
+        &:focus {
+          outline: none;
+          border-color: var(--primary-color);
+        }
+
+  
+        &::placeholder {
+          color: var(--link-color);
+          opacity: 0.7;
+        }
+      }
+  
+      textarea {
+        resize: none; 
+        height: 6rem; 
+      }
+  
+      .input-error {
+        border-color: var(--back-cancel); 
+      }
+  
+      .form__error {
+        @include description-text;
+        color: var(--text-error);
+        font-size: 0.875rem; 
+        margin-top: 0.5rem;
+      }
+    }
+  
+    .form__actions {
+      display: flex;
+      justify-content: space-between;
+  
+      button {
+        @include middle-text(400);
+        padding: 0.75rem 1.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+  
+        &[type="button"] {
+          background-color: var(--back-cancel);
+          color: var(--white-text);
+  
+          &:hover {
+            background-color: var(--back-cancel);
+          }
+        }
+  
+        &[type="submit"] {
+          background-color: var(--primary-color);
+          color: var(--white-text);
+  
+          &:hover {
+            background-color: var(--primary-color);
+          }
+  
+          &:disabled {
+            background-color: var(--input-color);
+            cursor: not-allowed;
+          }
+        }
+      }
+      
+      @media (max-width: 480px) {
+        flex-direction: column; 
+        gap: 1rem; 
+        
+        button { 
+          width:100%; 
+         }
+       }
+     }
+  }
+  

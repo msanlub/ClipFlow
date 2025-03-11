@@ -1,8 +1,8 @@
 <template>
-  <div class="form-container">
+  <div class="container__form">
     <h2>Contacto</h2>
     <form @submit.prevent="submit">
-      <div class="form-group">
+      <div class="form__group">
         <label for="name">Name</label>
         <input
           type="text"
@@ -14,10 +14,10 @@
           @blur="validateName"
           required
         />
-        <span v-if="errors.name" class="error">{{ errors.name }}</span>
+        <span v-if="errors.name" class="form__error">{{ errors.name }}</span>
       </div>
       
-      <div class="form-group">
+      <div class="form__group">
         <label for="email">Email</label>
         <input
           type="email"
@@ -29,10 +29,10 @@
           @blur="validateEmail"
           required
         />
-        <span v-if="errors.email" class="error">{{ errors.email }}</span>
+        <span v-if="errors.email" class="form__error">{{ errors.email }}</span>
       </div>
 
-      <div class="form-group">
+      <div class="form__group">
         <label for="message">Message</label>
         <textarea
           id="message"
@@ -43,10 +43,10 @@
           @blur="validateMessage"
           required
         ></textarea>
-        <span v-if="errors.message" class="error">{{ errors.message }}</span>
+        <span v-if="errors.message" class="form__error">{{ errors.message }}</span>
       </div>
 
-      <div class="form-actions">
+      <div class="form__actions">
         <button type="button" @click="cancel">Cancel</button>
         <button type="submit" :disabled="isSubmitting">Send</button>
       </div>
