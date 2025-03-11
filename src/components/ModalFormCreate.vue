@@ -1,37 +1,37 @@
 <template>
     <div v-if="isOpen" class="modal-overlay" @click.self="$emit('close')">
       <div class="modal-content">
-        <h3>Customize your template</h3>
+        <h3 class="content__title">Customize your template</h3>
   
         <!-- Formulario -->
-        <form @submit.prevent="generateTemplate">
+        <form @submit.prevent="generateTemplate" class="container__form">
           <!-- Imagen 1 -->
-          <div>
+          <div class="form__image">
             <label for="image1">Image 1</label>
             <input type="file" id="image1" @change="handleFileChange($event, 'image1')" required />
           </div>
           <!-- Imagen 2 -->
-          <div>
+          <div class="form__image">
             <label for="image2">Image 2</label>
             <input type="file" id="image2" @change="handleFileChange($event, 'image2')" required />
           </div>
           <!-- Imagen 3 -->
-          <div>
+          <div class="form__image">
             <label for="image3">Image 3</label>
             <input type="file" id="image3" @change="handleFileChange($event, 'image3')" required />
           </div>
           <!-- Imagen 4 -->
-          <div>
+          <div class="form__image">
             <label for="image4">Image 4</label>
             <input type="file" id="image4" @change="handleFileChange($event, 'image4')" required />
           </div>
           <!-- Texto 1 -->
-          <div>
+          <div class="form__text">
             <label for="text1">Text 1</label>
             <input type="text" id="text1" v-model.trim="formData.text1" maxlength="10" />
           </div>
           <!-- Texto 2 -->
-          <div>
+          <div class="form__text">
             <label for="text2">Text 2</label>
             <input type="text" id="text2" v-model.trim="formData.text2" maxlength="10" />
           </div>

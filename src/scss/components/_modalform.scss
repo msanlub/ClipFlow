@@ -1,0 +1,120 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  
+    .modal-content {
+      background-color: var(--fondo-back);
+      border-radius: 10px;
+      padding: 2rem;
+      width: 50rem;
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+  
+      .content__title {
+        @include title-text(600);
+        text-align: center;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+      }
+  
+      .container__form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 90%;
+  
+        .form__image,
+        .form__text {
+          display: flex;
+          flex-direction: column;
+  
+          label {
+            @include description-text;
+            margin-bottom: 0.5rem;
+            color: var(--black-text);
+          }
+  
+          input[type="file"],
+          input[type="text"] {
+            padding: 0.75rem;
+            border-radius: 5px;
+            border: 1px solid var(--input-color);
+            background-color: var(--fondo-back);
+            transition: border-color 0.3s ease;
+  
+            &:focus {
+              outline: none;
+              border-color: var(--primary-color);
+            }
+          }
+        }
+  
+        .generate-button {
+          @include middle-text(500);
+          padding: 0.75rem;
+          background-color: var(--primary-color);
+          color: var(--white-text);
+          border-radius: 5px;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 0.5rem;
+          transition: background-color 0.3s ease;
+          transition: transform 0.3s ease;
+  
+          &:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.04);
+          }
+  
+          &:disabled {
+            background-color: var(--primary-color);
+            cursor: not-allowed;
+          }
+  
+          .fa-spinner {
+            font-size: 1rem; 
+          }
+        }
+      }
+  
+      .close-modal {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background-color: var(--fondo-back);
+        color: var(--black-text);
+        border-radius: 50%;
+        padding: 0.5rem;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+  
+        &:hover {
+          transform: scale(1.02);
+        }
+  
+        &:before {
+          content: '\2715'; 
+          font-size: 1.5rem;
+          color: var(--black-text);
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .modal-content {
+      padding: 1.5rem;
+    }
+  }
+  
