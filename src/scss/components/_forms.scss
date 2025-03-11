@@ -66,11 +66,11 @@ h2 {
     }
   }
 
-  .error {
+  .form__error {
     @include description-text;
     color: var(--text-error);
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.875rem; 
+        margin-top: 0.5rem;
   }
 }
 
