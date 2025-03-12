@@ -15,9 +15,9 @@
       <h3>{{ video.name || 'Video #' + video.id }}</h3>
       <p>Creado el: {{ formatDate(video.created_at) }}</p>
       <div class="video-actions">
-        <button @click="previewVideo" class="preview-button">Vista previa</button>
-        <button @click="downloadVideo" class="download-button">Descargar</button>
-        <button @click="deleteVideo" class="delete-button">Eliminar</button>
+        <button @click="previewVideo" class="preview-button">Preview</button>
+        <button @click="downloadVideo" class="download-button">Download</button>
+        <button @click="deleteVideo" class="delete-button">Eliminate</button>
       </div>
     </div>
     
@@ -49,7 +49,7 @@ export default {
   },
   computed: {
     videoUrl() {
-      // Usar video_url si está disponible desde el backend
+      
       if (this.video.video_url) {
         return this.video.video_url;
       }
