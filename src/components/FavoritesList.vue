@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Título -->
-    <h2 class="favorites-name">Your Favorite Templates</h2>
+    <h2 class="favorites-name">Your favorite templates</h2>
 
     <!-- Lista de Plantillas Favoritas -->
     <div class="templates" v-if="favorites.length > 0">

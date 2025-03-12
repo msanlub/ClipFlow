@@ -8,7 +8,7 @@
     <FavoritesList v-else :favorites="userFavorites" />
 
     <!-- Sección de videos del usuario -->
-    <h2 class="user-videos">Your Videos</h2>
+    <h2 class="user-videos">Your videos</h2>
     <div v-if="loadingVideos">Loading your videos...</div>
     <div v-else-if="userVideos.length === 0">You have no videos yet.</div>
     <UserVideoList v-else :videos="userVideos" />
