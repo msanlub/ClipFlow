@@ -12,15 +12,18 @@
         <h3 class="template-infoTitle">{{ template.name }}</h3>
         <p class="template-infoP">{{ template.description }}</p>
 
-        <!-- Icono de corazón para favoritos -->
-        <button @click="toggleFavorite(template)" class="favorite-button">
-          <i :class="template.favorite ? 'fas fa-heart' : 'far fa-heart'"></i>
-        </button>
+        <div class="template__button">
+          <!-- Icono de corazón para favoritos -->
+          <button @click="toggleFavorite(template)" class="favorite-button">
+            <i :class="template.favorite ? 'fas fa-heart' : 'far fa-heart'"></i>
+          </button>
 
-        <!-- Botón para usar la plantilla, abrir modal -->
-        <button @click="openModal(template)" class="use-button">
-          <i class="fas fa-play"></i> Use
-        </button>
+          <!-- Botón para usar la plantilla, abrir modal -->
+          <button @click="openModal(template)" class="use-button">
+            <i class="fas fa-play"></i> Use
+          </button>
+        </div>
+        
       </div>
     </div>
 
