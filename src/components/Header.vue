@@ -51,7 +51,7 @@ const authStore = useAuthStore()
 const themeStore = useThemeStore()
 const router = useRouter()
 
-// Al montar el componente, asegura que el atributo data-theme esté sincronizado
+// sincronizo el dataTheme
 onMounted(() => {
   document.documentElement.setAttribute('data-theme', themeStore.theme)
 })
