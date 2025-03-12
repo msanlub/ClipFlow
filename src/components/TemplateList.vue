@@ -123,6 +123,25 @@ export default {
   },
   created() {
     this.fetchTemplates();
+    
+    // Escuchar eventos de login/logout para actualizar favoritos
+    const authStore = useAuthStore();
+    this.$watch(
+      () => authStore.isAuthenticated,
+      (newValue) => {
+        if (newValue) {
+          // El usuario se ha logueado, recargar para actualizar favoritos
+          this.fetchTemplates();
+        } else {
+          // El usuario ha cerrado sesión, limpiar estado de favoritos
+          this.templates = this.templates.map(template => {
+            template.favorite = false;
+            template.favorite_id = null;
+            return template;
+          });
+        }
+      }
+    );
   }
 };
 </script>

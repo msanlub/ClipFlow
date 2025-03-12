@@ -5,20 +5,20 @@
 
     <!-- Lista de Plantillas Favoritas -->
     <div class="templates" v-if="favorites.length > 0">
-      <div v-for="template in favorites" :key="template.id" class="template-card">
+      <div v-for="favorite in favorites" :key="favorite.id" class="template-card">
         <!-- Mostrar el icono -->
-        <img :src="template.icon_url" :alt="template.name" class="template-icon" />
+        <img :src="favorite.template.icon_url" :alt="favorite.template.name" class="template-icon" />
 
-        <h3 class="template-info">{{ template.name }}</h3>
-        <p class="template-info">{{ template.description }}</p>
+        <h3 class="template-info">{{ favorite.template.name }}</h3>
+        <p class="template-info">{{ favorite.template.description }}</p>
 
         <!-- Icono de corazón para eliminar de favoritos -->
-        <button @click="removeFavorite(template)" class="favorite-button">
+        <button @click="removeFavorite(favorite)" class="favorite-button">
           <i class="fas fa-heart"></i>
         </button>
 
         <!-- Botón para usar la plantilla, abrir modal -->
-        <button @click="openModal(template)" class="use-button">
+        <button @click="openModal(favorite.template)" class="use-button">
           <i class="fas fa-play"></i> Use
         </button>
       </div>
@@ -88,34 +88,34 @@ export default {
         this.isLoading = false;
       }
     },
-    async removeFavorite(template) {
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "This will remove the template from your favorites.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, remove it!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          privateAPI.delete(`/favorites/${template.favorite_id}`)
-            .then(() => {
-              this.favorites = this.favorites.filter(fav => fav.id !== template.id);
-              Swal.fire(
-                'Removed!',
-                'The template has been removed from your favorites.',
-                'success'
-              );
-            })
-            .catch((error) => {
-              console.error('Error removing favorite:', error);
-              Swal.fire(
-                'Error!',
-                'There was an error removing the template from your favorites.',
-                'error'
-              );
-            });
+    async removeFavorite(favorite) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "This will remove the template from your favorites.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        privateAPI.delete(`/favorites/${favorite.id}`) // Usar favorite.id en lugar de template.favorite_id
+          .then(() => {
+            this.favorites = this.favorites.filter(fav => fav.id !== favorite.id);
+            Swal.fire(
+              'Removed!',
+              'The template has been removed from your favorites.',
+              'success'
+            );
+          })
+          .catch((error) => {
+            console.error('Error removing favorite:', error);
+            Swal.fire(
+              'Error!',
+              'There was an error removing the template from your favorites.',
+              'error'
+            );
+          });
         }
       });
     },
@@ -134,5 +134,5 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos */
+  @import '../../src/scss/main.scss';
 </style>
