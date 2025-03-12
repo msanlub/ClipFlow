@@ -1,29 +1,38 @@
 <template>
   <div class="user-page">
-    <h1>Welcome, {{ userName }}</h1>
-    
+    <h1 class="">Welcome, {{ userName }}</h1>
     <!-- Verificar si los favoritos están cargando o si no hay favoritos -->
     <div v-if="loading">Loading your favorites...</div>
     <div v-else-if="userFavorites.length === 0">You have no favorites yet.</div>
     <FavoritesList v-else :favorites="userFavorites" />
+
+    <!-- Sección de Videos del usuario -->
+    <h2>Your Videos</h2>
+    <div v-if="loadingVideos">Loading your videos...</div>
+    <div v-else-if="userVideos.length === 0">You have no videos yet.</div>
+    <UserVideoList v-else :videos="userVideos" />
   </div>
 </template>
 
 <script>
 import FavoritesList from '@/components/FavoritesList.vue';
+import UserVideoList from '@/components/UserVideoList.vue';
 import privateAPI from '@/api/private';
 import { useAuthStore } from '@/stores/authStore';
 
 export default {
   name: 'UserPage',
   components: {
-    FavoritesList
+    FavoritesList,
+    UserVideoList,
   },
   data() {
     return {
       userName: '',
       userFavorites: [],
-      loading: true // Indicador de carga
+      loading: true,
+      loadingVideos: false,
+      userVideos: []
     };
   },
   async created() {
@@ -43,37 +52,27 @@ export default {
       // Obtener favoritos del usuario
       const favoritesResponse = await privateAPI.get('/favorites');
       this.userFavorites = favoritesResponse.data;
+
+      //Obtener videos del usuario
+      this.loadingVideos = true;
+      const videosResponse = await privateAPI.get('/userVideos');
+      this.userVideos = videosResponse.data;
+      console.log("Videos obtenidos:", this.userVideos);
     } catch (error) {
       console.error('Error al obtener datos del usuario:', error);
-
-      // Solo redirige si el error es específicamente un problema de autenticación
       if (error.response && error.response.status === 401) {
         this.$router.push('/login');
       }
     } finally {
-      this.loading = false; 
+      this.loading = false;
+      this.loadingVideos = false; 
     }
+    
   }
 
 };
 </script>
 
 <style scoped>
-.user-page {
-  padding: 2rem;
-  background-color: #f9f9f9;
-  text-align: center;
-}
-
-h1 {
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 2rem;
-}
-
-div {
-  font-size: 1.2rem;
-  color: #888;
-  margin-top: 2rem;
-}
+ @import '../../src/scss/main.scss';
 </style>
