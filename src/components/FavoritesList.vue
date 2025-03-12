@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Título -->
-    <h2>Your Favorite Templates</h2>
+    <h2 class="favorites-name">Your Favorite Templates</h2>
 
     <!-- Lista de Plantillas Favoritas -->
     <div class="templates" v-if="favorites.length > 0">
@@ -9,18 +9,21 @@
         <!-- Mostrar el icono -->
         <img :src="favorite.template.icon_url" :alt="favorite.template.name" class="template-icon" />
 
-        <h3 class="template-info">{{ favorite.template.name }}</h3>
-        <p class="template-info">{{ favorite.template.description }}</p>
+        <h3 class="template-infoTitle">{{ favorite.template.name }}</h3>
+        <p class="template-infoP">{{ favorite.template.description }}</p>
 
-        <!-- Icono de corazón para eliminar de favoritos -->
-        <button @click="removeFavorite(favorite)" class="favorite-button">
-          <i class="fas fa-heart"></i>
-        </button>
+        <div class="template__button">
+          <!-- Icono de corazón para eliminar de favoritos -->
+          <button @click="removeFavorite(favorite)" class="favorite-button">
+            <i class="fas fa-heart"></i>
+          </button>
 
-        <!-- Botón para usar la plantilla, abrir modal -->
-        <button @click="openModal(favorite.template)" class="use-button">
-          <i class="fas fa-play"></i> Use
-        </button>
+          <!-- Botón para usar la plantilla, abrir modal -->
+          <button @click="openModal(favorite.template)" class="use-button">
+            <i class="fas fa-play"></i> Use
+          </button>
+        </div>
+        
       </div>
     </div>
     <div v-else class="no-favorites">

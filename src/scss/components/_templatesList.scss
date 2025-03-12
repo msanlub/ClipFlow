@@ -1,6 +1,11 @@
 @use '../utilities/variables';
 @use '../utilities/mixins';
 
+
+.favorites-name{
+    @include middle-text(500);
+    color: var(--primary-color);
+}
 .container__templates{
 
   display: flex;

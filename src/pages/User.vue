@@ -1,13 +1,14 @@
 <template>
   <div class="user-page">
-    <h1 class="">Welcome, {{ userName }}</h1>
-    <!-- Verificar si los favoritos están cargando o si no hay favoritos -->
+    <h1 class="user-name">Welcome, {{ userName }}</h1>
+
+    <!-- Sección de plantillas favoritos -->
     <div v-if="loading">Loading your favorites...</div>
     <div v-else-if="userFavorites.length === 0">You have no favorites yet.</div>
     <FavoritesList v-else :favorites="userFavorites" />
 
-    <!-- Sección de Videos del usuario -->
-    <h2>Your Videos</h2>
+    <!-- Sección de videos del usuario -->
+    <h2 class="user-videos">Your Videos</h2>
     <div v-if="loadingVideos">Loading your videos...</div>
     <div v-else-if="userVideos.length === 0">You have no videos yet.</div>
     <UserVideoList v-else :videos="userVideos" />

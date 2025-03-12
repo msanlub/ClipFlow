@@ -1,6 +1,19 @@
 .user-page{
     display:flex;
     flex-direction: column;
-    gap:2rem;
+    justify-content: space-between;
+
+    gap:4rem;
     background-color: var(--fondo-back);
+
+    .user-name{
+        @include title-text(800);
+        color: var(--primary-color);
+        margin-top: 2rem;
+    }
+
+    .user-videos{
+        @include middle-text(500);
+        color: var(--primary-color);
+    }
 }
