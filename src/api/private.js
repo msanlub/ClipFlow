@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 
 const privateAPI = axios.create({
-  baseURL: 'http://localhost/api/v1/auth', 
+  baseURL: 'https://192.99.15.53:8444/api/v1/auth/', 
 });
 
 // Interceptor para agregar el token

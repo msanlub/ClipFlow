@@ -65,7 +65,7 @@ export default {
   },
   methods: {
     getImagePath(path) {
-      return path ? `http://localhost/${path.replace(/\\/g, '/')}` : '';
+      return path ? `https://192.99.15.53:8444/${path.replace(/\\/g, '/')}` : '';
     },
     async fetchFavorites() {
       if (!this.isAuthenticated) {

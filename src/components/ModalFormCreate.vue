@@ -169,15 +169,25 @@
   }
   
   .modal-content {
+    max-width: 36rem;
+    width:30rem;
+    max-height: 30rem;
     background: #fff;
     padding: 20px;
     border-radius: 8px;
     width: 300px;
     text-align: center;
+    box-sizing: border-box;
   }
   
   .modal-content form {
     margin-bottom: 20px;
+  }
+
+  .container-form{
+    max-width: 36rem;
+    width:30rem;
+    max-height: 30rem;
   }
   
   .close-modal {
