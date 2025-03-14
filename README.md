@@ -92,4 +92,4 @@ Devuelve un link a tu localhost, púlsalo con CTRL + click.
 
 ### Producción
 
-Para poder ver el proyecto desplegado en producción accede a la página [ClipFlow](https://clipflow.netlify.app/user)
+Para poder ver el proyecto desplegado en producción accede a la página [ClipFlow](https://clipflow.netlify.app)
